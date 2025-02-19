@@ -1,7 +1,9 @@
-# math
-Math problems I solved with numerical methods
+# Math problems I solved with numerical methods
 
-Estimates the probability of achieving a winning streak in a binomial game, measures execution time, then plots it. The classical description is exponential, and this solution does it dynamically to make it O(logn). In practise, I only manage to show the early parts of the logn so it looks O(n)
+### Win Streak
+Estimates the probability of achieving a winning streak in a binomial game, measures the execution time, then plots it. The classical description is exponential, and this solution does it dynamic to make it O(logn). In practise, I only manage to show the early parts of the logn so it looks O(n). Lesson learnt: O(logn) is in practise often simply O(n) in a slow program like Python and stack-overflows are horrible so avoid recursion.
+
+### NP-Reduction
 
 CASTING for a movie looks like the coloring problem if each edge is a scene and we only got two roles in each scene.
 So I try that. Edges are scenes, and then, I don't think it matters which in order to create a reduction but,
