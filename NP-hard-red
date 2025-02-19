@@ -1,0 +1,118 @@
+
+"""
+Johan Welander NP-reduction Movie-Casting to Graph Coloring
+"""
+
+def take_input():
+    """A badly written function that takes all inputs and figures out the connected nodes
+    At worst O(E + V)"""
+    num_nodes = int(input())
+    num_edges = int(input())
+    colors = int(input())
+    num_connected_nodes = 0
+    edges = []
+    connected_nodes = []
+
+    edges, connected_nodes = locate_edge_points(num_nodes, num_edges, edges, connected_nodes)
+
+    for i in range(len(connected_nodes)):   # O(V)
+        num_connected_nodes = connected_nodes.count(True)
+
+    return num_nodes, num_edges, colors, edges, connected_nodes, num_connected_nodes
+
+
+def locate_edge_points(num_nodes: int, num_edges: int, edges: list, connected_nodes: list):
+    """Takes "edge-input" and splits it up marking all non-isolated vertices
+    O(V + E)"""
+
+    for i in range(num_nodes + 1):  # O(V)
+        connected_nodes.append(False)
+
+    for i in range(num_edges):  # O(E)
+        edge = input()
+        edge_points = edge.split()
+        edges.append([int(edge_points[0]), int(edge_points[1])])  # start is at 0, end at 1.
+        connected_nodes[int(edge_points[0]) - 1] = True  # the -1 solves the indexing issue where they index from 1
+        connected_nodes[int(edge_points[1]) - 1] = True  # but we start from 0 in Python
+    return edges, connected_nodes
+
+def number_the_edges(edges: list, num_nodes: int):
+    """
+    I want to recreate edges with indexing that matches our CASTING problem. So I want to remove all isolated points
+    from the list, and then change the indexing fto start. So I want to take all edges and begin indexing them from 1.
+    O(2*E) = O(E)
+    """
+    new_index = 1
+    changed_values = []
+
+    for i in range(num_nodes + 1):   # O(V)
+        changed_values.append(False)
+
+    for edge in edges:      # O(E)
+        #for i in range(1,3):
+        if changed_values[edge[i]] == False:
+            changed_values[edge[i]] = new_index
+            edge[i] = new_index
+            new_index = new_index + 1
+        else:
+            edge[i] = changed_values[edge[i]]   # dessa är onödiga tror jag
+
+    return edges
+
+def reduction(num_nodes:int, num_edges:int, colors:int, edges:list, connected_nodes:list, num_connected_nodes:int):
+    """
+    1. First it writes down what the divas and their coactor "3" can act
+    2. Then it writes down all nodes (which are roles)
+    3. Then it gives scenes to the divas and the coactor
+    4. Then it writes down all other scenes skipping the divas and their coactor
+    Complexity: O(E + V * Colors)
+    """
+
+    if colors >= num_nodes:
+        colors = num_connected_nodes    # A max case if there are too many colors
+
+    print(num_connected_nodes + 3)  # All roles + our 3 extra roles created to solve divas.
+    print(num_edges + 2)    # All scenes + our 2 extra scenes for the divas
+    print(colors + 3)   # All actors + our extra 3 actors to solve divas
+
+    print("1 1")       # Divas and their coactors can only perform one role each
+    print("1 2")
+    print("1 3")
+
+    for node in range(num_nodes):   # Now print all non-diva roles,
+        if connected_nodes[node]:
+            print(colors, end ="")
+            for i in range(colors):     # O(V * Colors)
+                print(" ", end ="")
+                print(i + 4, end = " ")
+            print()
+
+    print("2 1 3")      # Match the coactor and the divas to extra scenes so that requirement is satisfied
+    print("2 2 3")
+
+    for edge in edges:      # Print all non-diva scenes, O(E)
+        print(2, end =" ")      # 2 actors edge[0] and edge[1] in every scene.
+        if edge[0] < edge[1]:
+            print(edge[0]+3,edge[1]+3,sep = " ")
+        else:
+            print(edge[1] + 3, edge[0] + 3, sep=" ")
+
+        """lesser = min(edge[0], edge[1])
+        higher = max(edge[0], edge[1])
+        print(lesser + 3, end = " ")
+        print(higher + 3)"""
+
+
+def main():
+    """The main function. Takes all input, treats it, and then prints the reduction"""
+    # Take input
+    num_nodes, num_edges, colors, edges, connected_nodes, num_connected_nodes = take_input()
+
+    # Re-index the edges for the CASTING problem
+    edges = number_the_edges(edges, num_nodes)
+
+    # Printer goes prrrrr
+    reduction(num_nodes, num_edges, colors, edges, connected_nodes, num_connected_nodes)
+
+main()
+
