@@ -1,0 +1,76 @@
+"""
+Checks complexity for a memoized binomial distribution (as in a coin toss) win streak
+chance of winning independent of game. A reasonable time complexity would be O(logn)
+"""
+
+import sys
+import matplotlib.pyplot as plt
+import time
+
+sys.setrecursionlimit(10000000)
+
+
+def g(x, k, p, cache):
+    """The assigned formula for finding win chance"""
+    if cache[x] == "No Val":
+        if x < k:
+            cache[x] = 0
+        elif x == k:
+            cache[x] = p ** k
+        else:
+            cache[x] = g(x - 1, k, p, cache) + (p ** k) * (1 - p) * (1 - g(x - k - 1, k, p, cache))
+    return cache[x]
+
+
+def create_graph(list_of_n, list_of_t, title = "n something"):
+    """Creates the graph"""
+    plt.figure()
+    plt.plot(list_of_n, list_of_t)
+    plt.xlabel("times")
+    plt.ylabel("n-values")
+    plt.show()
+
+
+def takes_longer_than_1_sec(n, dt):
+    """ Prints whenever a calculation takes longer than 1 sec"""
+    if dt > 1:
+        print("for n = ", end ="")
+        print(n, end =" ")
+        print("the time taken was ", end ="")
+        print(dt)
+
+
+def measure_performance(n, p=0.99):
+    '''Test iterations many different n values and measures the time it takes to finish O(iterations * n)'''
+    iterations = 13
+    n_vals = []
+    times = []
+    for i in range(iterations):
+        k = n // 2      # It said it was an integer,
+        cache = []
+        for i in range(n+1):
+            cache.append("No Val")
+
+        start = time.perf_counter()
+        g(n, k, p, cache)
+        end = time.perf_counter()
+
+        dt = end - start
+
+        n_vals.append(n)
+        times.append(dt)
+
+        takes_longer_than_1_sec(n, dt)
+
+        #n = n + 1
+        n = 2 * n
+
+    return n_vals, times
+
+def main():
+    n = 200
+    n_vals, times = measure_performance(n)
+    create_graph(n_vals, times)
+
+
+main()
